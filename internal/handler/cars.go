@@ -10,7 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// addCar godoc
+// @Summary Добавить автомобиль
+// @Description Добавление нового автомобиля в систему (требуется авторизация)
+// @Tags cars
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param input body models.Car true "Данные автомобиля"
+// @Success 200 {object} map[string]int "ID созданного автомобиля"
+// @Failure 400 {object} errorResponce "Неверный формат данных"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/car [post]
 func (h *Handler) addCar(c *gin.Context){
 	userId, err := getUserId(c)
 	if err != nil {
@@ -31,6 +43,16 @@ func (h *Handler) addCar(c *gin.Context){
 	})
 }
 
+// getAllCars godoc
+// @Summary Получить все автомобили
+// @Description Получение списка всех автомобилей в системе
+// @Tags cars
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} getAllCarsResponce "Список автомобилей"
+// @Failure 500 {object} handler.errorResponce "Ошибка сервера"
+// @Router /api/car [get]
 func (h *Handler) getAllCars(c *gin.Context){
 
 	carInfo, err := h.service.GetAllCars()
@@ -43,6 +65,19 @@ func (h *Handler) getAllCars(c *gin.Context){
 	})
 }
 
+// getCarById godoc
+// @Summary Получить автомобиль по ID
+// @Description Получение информации об автомобиле по его идентификатору
+// @Tags cars
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "ID автомобиля"
+// @Success 200 {object} models.Car "Данные автомобиля"
+// @Failure 400 {object} handler.errorResponce "Неверный формат ID"
+// @Failure 404 {object} handler.errorResponce "Автомобиль не найден"
+// @Failure 500 {object} handler.errorResponce "Ошибка сервера"
+// @Router /api/car/{id} [get]
 func (h *Handler) getCarById(c *gin.Context) {
 	carId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -62,6 +97,20 @@ func (h *Handler) getCarById(c *gin.Context) {
 	c.JSON(http.StatusOK, car)
 }
 
+// deleteCar godoc
+// @Summary Удалить автомобиль
+// @Description Удаление автомобиля по ID (требуется авторизация владельца)
+// @Tags cars
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth 
+// @Param id path int true "ID автомобиля"
+// @Success 200 {object} statusResponce "Статус операции"
+// @Failure 400 {object} handler.errorResponce "Неверный формат ID"
+// @Failure 401 {object} handler.errorResponce "Не авторизован"
+// @Failure 404 {object} handler.errorResponce "Автомобиль не найден или нет прав"
+// @Failure 500 {object} handler.errorResponce "Ошибка сервера"
+// @Router /api/car/{id} [delete]
 func (h *Handler) deleteCar(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {

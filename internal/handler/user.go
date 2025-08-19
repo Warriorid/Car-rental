@@ -9,7 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// getInfo godoc
+// @Summary Получить информацию о пользователе
+// @Description Получение данных текущего авторизованного пользователя
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} models.User "Данные пользователя"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/user [get]
 func (h *Handler) getInfo(c *gin.Context){
 	userId, err := getUserId(c)
 	if err != nil {
@@ -23,6 +33,20 @@ func (h *Handler) getInfo(c *gin.Context){
 	c.JSON(http.StatusOK, user)
 }
 
+
+// updateInfo godoc
+// @Summary Обновить информацию пользователя
+// @Description Обновление данных текущего авторизованного пользователя
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param input body models.UserUpdate true "Данные для обновления"
+// @Success 200 {object} statusResponce "Статус операции"
+// @Failure 400 {object} errorResponce "Неверный формат данных"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/user [put]	
 func (h *Handler) updateInfo(c *gin.Context){
 	userId, err := getUserId(c)
 	if err != nil {
@@ -42,6 +66,18 @@ func (h *Handler) updateInfo(c *gin.Context){
 	})
 }
 
+// deleteUser godoc
+// @Summary Удалить пользователя
+// @Description Удаление аккаунта текущего авторизованного пользователя
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} statusResponce "Статус операции"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 404 {object} errorResponce "Пользователь не найден"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/user [delete]
 func (h *Handler) deleteUser(c *gin.Context){
 	userId, err := getUserId(c)
 	if err != nil {

@@ -1,0 +1,593 @@
+basePath: /
+definitions:
+  handler.errorResponce:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.getAllCarsResponce:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.BriefCarInfo'
+        type: array
+    type: object
+  handler.getAllRentalsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.RentalHistory'
+        type: array
+    type: object
+  handler.statusResponce:
+    properties:
+      status:
+        type: string
+    type: object
+  models.BriefCarInfo:
+    properties:
+      color:
+        type: string
+      model:
+        type: string
+      price_per_day:
+        type: number
+    type: object
+  models.Car:
+    properties:
+      color:
+        type: string
+      is_available:
+        type: boolean
+      location:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      price_per_day:
+        type: number
+      year:
+        type: integer
+    required:
+    - color
+    - location
+    - mileage
+    - model
+    - price_per_day
+    - year
+    type: object
+  models.RentalHistory:
+    properties:
+      car:
+        type: string
+      end_date:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: number
+      user:
+        type: string
+    type: object
+  models.Reviews:
+    properties:
+      comment:
+        type: string
+      rating:
+        type: integer
+      rental_id:
+        type: integer
+    required:
+    - rating
+    - rental_id
+    type: object
+  models.SignInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.StartRent:
+    properties:
+      car_id:
+        type: integer
+      end_date:
+        type: string
+      start_date:
+        type: string
+    required:
+    - car_id
+    - end_date
+    - start_date
+    type: object
+  models.User:
+    properties:
+      driver_license:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - driver_license
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  models.UserUpdate:
+    properties:
+      driver_license:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для системы аренды автомобилей
+  title: Car Rental API
+  version: "1.0"
+paths:
+  /api/car:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка всех автомобилей в системе
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список автомобилей
+          schema:
+            $ref: '#/definitions/handler.getAllCarsResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить все автомобили
+      tags:
+      - cars
+    post:
+      consumes:
+      - application/json
+      description: Добавление нового автомобиля в систему (требуется авторизация)
+      parameters:
+      - description: Данные автомобиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Car'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID созданного автомобиля
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Неверный формат данных
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Добавить автомобиль
+      tags:
+      - cars
+  /api/car/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление автомобиля по ID (требуется авторизация владельца)
+      parameters:
+      - description: ID автомобиля
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус операции
+          schema:
+            $ref: '#/definitions/handler.statusResponce'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Автомобиль не найден или нет прав
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить автомобиль
+      tags:
+      - cars
+    get:
+      consumes:
+      - application/json
+      description: Получение информации об автомобиле по его идентификатору
+      parameters:
+      - description: ID автомобиля
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные автомобиля
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Автомобиль не найден
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить автомобиль по ID
+      tags:
+      - cars
+  /api/rental:
+    get:
+      consumes:
+      - application/json
+      description: Получение истории всех аренд текущего пользователя (требуется авторизация)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список аренд пользователя
+          schema:
+            $ref: '#/definitions/handler.getAllRentalsResponse'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить историю аренд
+      tags:
+      - rentals
+    post:
+      consumes:
+      - application/json
+      description: Создание новой аренды автомобиля (требуется авторизация)
+      parameters:
+      - description: Данные для начала аренды
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.StartRent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID созданной аренды
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Неверный формат данных или даты
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Автомобиль не найден
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Начать аренду автомобиля
+      tags:
+      - rentals
+  /api/rental/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Завершение текущей аренды и расчет стоимости (требуется авторизация)
+      parameters:
+      - description: ID аренды
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Общая стоимость аренды
+          schema:
+            additionalProperties:
+              format: float64
+              type: number
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "403":
+          description: Нет прав для завершения
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Аренда не найдена или уже завершена
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Завершить аренду
+      tags:
+      - rentals
+  /api/review:
+    post:
+      consumes:
+      - application/json
+      description: Создание отзыва для завершенной аренды (требуется авторизация)
+      parameters:
+      - description: Данные отзыва
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Reviews'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID созданного отзыва
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Неверный формат данных
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "403":
+          description: Нет прав для отзыва
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Аренда не найдена
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "409":
+          description: Отзыв уже оставлен
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Оставить отзыв
+      tags:
+      - reviews
+  /api/user:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление аккаунта текущего авторизованного пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус операции
+          schema:
+            $ref: '#/definitions/handler.statusResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить пользователя
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Получение данных текущего авторизованного пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные пользователя
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить информацию о пользователе
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Обновление данных текущего авторизованного пользователя
+      parameters:
+      - description: Данные для обновления
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус операции
+          schema:
+            $ref: '#/definitions/handler.statusResponce'
+        "400":
+          description: Неверный формат данных
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "401":
+          description: Не авторизован
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновить информацию пользователя
+      tags:
+      - users
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Вход в систему и получение токена
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный вход, возвращает токен
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "400":
+          description: Неверные учетные данные
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      summary: Авторизация пользователя
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя в системе
+      parameters:
+      - description: Данные пользователя для регистрации
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно создан
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "400":
+          description: Неверный формат данных
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/handler.errorResponce'
+      summary: Регистрация нового пользователя
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

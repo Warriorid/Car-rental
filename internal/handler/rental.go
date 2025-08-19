@@ -13,6 +13,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// startRental godoc
+// @Summary Начать аренду автомобиля
+// @Description Создание новой аренды автомобиля (требуется авторизация)
+// @Tags rentals
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param input body models.StartRent true "Данные для начала аренды"
+// @Success 200 {object} map[string]int "ID созданной аренды"
+// @Failure 400 {object} errorResponce "Неверный формат данных или даты"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 404 {object} errorResponce "Автомобиль не найден"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/rental [post]
 func(h *Handler) startRental(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -40,6 +54,21 @@ func(h *Handler) startRental(c *gin.Context) {
 	})
 }
 
+// endRendal godoc
+// @Summary Завершить аренду
+// @Description Завершение текущей аренды и расчет стоимости (требуется авторизация)
+// @Tags rentals
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "ID аренды"
+// @Success 200 {object} map[string]float64 "Общая стоимость аренды"
+// @Failure 400 {object} errorResponce "Неверный формат ID"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 403 {object} errorResponce "Нет прав для завершения"
+// @Failure 404 {object} errorResponce "Аренда не найдена или уже завершена"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/rental/{id} [put]
 func (h *Handler) endRendal(c *gin.Context) {
 	rentId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -72,6 +101,17 @@ func (h *Handler) endRendal(c *gin.Context) {
 
 }
 
+// rentalHistory godoc
+// @Summary Получить историю аренд
+// @Description Получение истории всех аренд текущего пользователя (требуется авторизация)
+// @Tags rentals
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} getAllRentalsResponse "Список аренд пользователя"
+// @Failure 401 {object} errorResponce "Не авторизован"
+// @Failure 500 {object} errorResponce "Ошибка сервера"
+// @Router /api/rental [get]
 func (h *Handler) rentalHistory(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {

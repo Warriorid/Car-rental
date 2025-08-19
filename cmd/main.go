@@ -1,12 +1,3 @@
-// @title Car Rental Service API
-// @version 1.0
-// @description API for car rental management system
-// @host localhost:8080
-// @BasePath /
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-
 package main
 
 import (
@@ -14,6 +5,14 @@ import (
 	
 )
 
+// @title Car Rental API
+// @version 1.0
+// @description API для системы аренды автомобилей
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	app := app.NewApp()
 	app.Run()

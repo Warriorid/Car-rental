@@ -13,11 +13,11 @@ import (
 
 const (
 	userCtx = "userId"
-	authoeizationHeader = "Authorization"
+	authorizationHeader = "Authorization"
 )
 
 func (h *Handler) userIdentity (c *gin.Context) {
-	header := c.GetHeader(authoeizationHeader)
+	header := c.GetHeader(authorizationHeader)
 	if header == "" {
 		newErrorRessponce(c, http.StatusUnauthorized, "header is empty")
 		return
@@ -62,7 +62,7 @@ func getUserId(c *gin.Context) (int, error){
 }
 
 func (h *Handler) addTokenToBlackList(c *gin.Context) {
-	header := c.GetHeader(authoeizationHeader)
+	header := c.GetHeader(authorizationHeader)
     if header == "" {
         newErrorRessponce(c, http.StatusBadRequest, "empty auth header")
         return
