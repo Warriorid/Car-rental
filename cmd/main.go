@@ -1,7 +1,7 @@
 package main
 
 import (
-	"CarRentalService/pkg/app"
+	"CarRentalService/internal/app"
 	
 )
 

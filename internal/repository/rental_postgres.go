@@ -54,8 +54,16 @@ func (r *RentalPostgres) EndRental(rentId int)(float64, error){
 		return 0.0, err
 	}
 	defer func() {
-        if err != nil {
+        if p := recover(); p != nil {
             tx.Rollback()
+            panic(p)
+        } else if err != nil {
+            tx.Rollback()
+        } else {
+            err = tx.Commit()
+            if err != nil {
+                tx.Rollback()
+            }
         }
     }()
 

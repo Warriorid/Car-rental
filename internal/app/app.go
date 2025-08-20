@@ -2,7 +2,7 @@ package app
 
 import (
 	"CarRentalService/internal/handler"
-	"CarRentalService/internal/redis"
+	"CarRentalService/pkg/redis"
 	"CarRentalService/internal/repository"
 	"CarRentalService/internal/service"
 	"CarRentalService/pkg/config"
@@ -12,7 +12,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
